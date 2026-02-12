@@ -13,20 +13,20 @@ st.title("📊 Sales Analytics Dashboard")
 # -----------------------------
 df = pd.read_csv("data/raw/Sales_data.csv", encoding="latin1")
 
-df['invoice_date'] = pd.to_datetime(df['invoice_date'], dayfirst=True)
+df['Invoice_date'] = pd.to_datetime(df['Invoice_date'], dayfirst=True)
 df['revenue'] = df['quantity'] * df['unit_price']
 
 # -----------------------------
 # KPIs CALCULATION
 # -----------------------------
 total_revenue = df['revenue'].sum()
-total_orders = df['invoice_no'].nunique()
+total_orders = df['Invoice_no'].nunique()
 total_units = df['quantity'].sum()
 avg_order_value = total_revenue / total_orders
 revenue_per_customer = total_revenue / df['customer_id'].nunique()
 
 # Repeat Customer Rate
-repeat_customers = df.groupby('customer_id')['invoice_no'].nunique()
+repeat_customers = df.groupby('customer_id')['Invoice_no'].nunique()
 repeat_rate = (repeat_customers > 1).sum() / df['customer_id'].nunique() * 100
 
 # -----------------------------
@@ -46,15 +46,15 @@ st.divider()
 # MONTHLY REVENUE TREND
 # -----------------------------
 monthly = (
-    df.groupby(df['invoice_date'].dt.to_period('M'))['revenue']
+    df.groupby(df['Invoice_date'].dt.to_period('M'))['revenue']
     .sum()
     .reset_index()
 )
-monthly['invoice_date'] = monthly['invoice_date'].astype(str)
+monthly['Invoice_date'] = monthly['Invoice_date'].astype(str)
 
 fig_monthly = px.line(
     monthly,
-    x='invoice_date',
+    x='Invoice_date',
     y='revenue',
     title="Monthly Revenue Trend",
     markers=True
