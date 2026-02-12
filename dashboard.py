@@ -11,7 +11,7 @@ st.title("📊 Sales Analytics Dashboard")
 # -----------------------------
 # LOAD DATA (CSV ONLY)
 # -----------------------------
-df = pd.read_csv("data/raw/Sales_data.csv")
+df = pd.read_csv("data/raw/Sales_data.csv", encoding="latin1")
 
 df['invoice_date'] = pd.to_datetime(df['invoice_date'], dayfirst=True)
 df['revenue'] = df['quantity'] * df['unit_price']
