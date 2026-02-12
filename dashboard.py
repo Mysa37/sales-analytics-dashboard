@@ -13,13 +13,11 @@ st.title("📊 Sales Analytics Dashboard")
 # -----------------------------
 # DATABASE CONNECTION
 # -----------------------------
-conn = mysql.connector.connect(
-    host="127.0.0.1",
-    user="analytics_user",
-    password="Pass123!",
-    database="Sales_db"
-)
+# Load from CSV instead of MySQL
+df = pd.read_csv("data/raw/Sales_data.csv")
 
+df['invoice_date'] = pd.to_datetime(df['invoice_date'], dayfirst=True)
+df['revenue'] = df['quantity'] * df['unit_price']
 query = "SELECT * FROM sales"
 df = pd.read_sql(query, conn)
 
