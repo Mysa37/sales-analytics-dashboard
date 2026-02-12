@@ -1,27 +1,19 @@
 import streamlit as st
 import pandas as pd
-import mysql.connector
 import plotly.express as px
 
 # -----------------------------
 # PAGE CONFIG
 # -----------------------------
 st.set_page_config(page_title="Sales Dashboard", layout="wide")
-
 st.title("📊 Sales Analytics Dashboard")
 
 # -----------------------------
-# DATABASE CONNECTION
+# LOAD DATA (CSV ONLY)
 # -----------------------------
-# Load from CSV instead of MySQL
 df = pd.read_csv("data/raw/Sales_data.csv")
 
 df['invoice_date'] = pd.to_datetime(df['invoice_date'], dayfirst=True)
-df['revenue'] = df['quantity'] * df['unit_price']
-query = "SELECT * FROM sales"
-df = pd.read_sql(query, conn)
-
-df['invoice_date'] = pd.to_datetime(df['invoice_date'])
 df['revenue'] = df['quantity'] * df['unit_price']
 
 # -----------------------------
@@ -53,7 +45,11 @@ st.divider()
 # -----------------------------
 # MONTHLY REVENUE TREND
 # -----------------------------
-monthly = df.groupby(df['invoice_date'].dt.to_period('M'))['revenue'].sum().reset_index()
+monthly = (
+    df.groupby(df['invoice_date'].dt.to_period('M'))['revenue']
+    .sum()
+    .reset_index()
+)
 monthly['invoice_date'] = monthly['invoice_date'].astype(str)
 
 fig_monthly = px.line(
@@ -69,7 +65,13 @@ st.plotly_chart(fig_monthly, use_container_width=True)
 # -----------------------------
 # TOP 5 PRODUCTS
 # -----------------------------
-top_products = df.groupby('description')['revenue'].sum().sort_values(ascending=False).head(5).reset_index()
+top_products = (
+    df.groupby('description')['revenue']
+    .sum()
+    .sort_values(ascending=False)
+    .head(5)
+    .reset_index()
+)
 
 fig_products = px.bar(
     top_products,
@@ -98,9 +100,13 @@ st.plotly_chart(fig_country, use_container_width=True)
 # -----------------------------
 # TOP 5 CUSTOMERS
 # -----------------------------
-top_customers = df.groupby('customer_id')['revenue'].sum().sort_values(ascending=False).head(5).reset_index()
+top_customers = (
+    df.groupby('customer_id')['revenue']
+    .sum()
+    .sort_values(ascending=False)
+    .head(5)
+    .reset_index()
+)
 
 st.subheader("🏆 Top 5 Customers")
 st.dataframe(top_customers)
-
-conn.close()
