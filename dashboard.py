@@ -13,13 +13,19 @@ st.title("📊 Sales Analytics Dashboard")
 # -----------------------------
 df = pd.read_csv("data/raw/Sales_data.csv", encoding="latin1")
 
-# Clean column names
 df.columns = df.columns.str.strip()
 
-# Convert date
-df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+df['InvoiceDate'] = pd.to_datetime(
+    df['InvoiceDate'],
+    dayfirst=True,
+    errors='coerce'
+)
 
-# Create Revenue column
+df = df.dropna(subset=['InvoiceDate'])
+
+df = df[df['Quantity'] > 0]
+df = df[df['UnitPrice'] > 0]
+
 df['Revenue'] = df['Quantity'] * df['UnitPrice']
 
 # Remove negative or cancelled transactions (optional but professional)
